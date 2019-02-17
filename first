@@ -1,0 +1,72 @@
+import numpy as np
+import matplotlib.pyplot as plt
+# A szokásos import
+%pylab inline
+
+def some_random_coeffs():
+    a = 10 * np.random.rand() - 2.5
+    b = 20 * np.random.rand() - 5
+    c = 100 * np.random.rand() - 50
+    return a, b, c
+
+def some_random_data(a, b, c, N):
+    x = np.linspace(-N, N, 2 * N + 1)
+    sigma = 10 * (np.random.rand(x.shape[0]) + 1)
+    y = np.random.normal(a * x**2 + b * x + c, sigma)
+    return x, y, sigma
+
+def random_data_with_outliers(a, b, c, N, M):
+    x, y, sigma = some_random_data(a, b, c, N)
+    idx = np.random.randint(0, 2 * N, M)
+    y[idx] = np.min(y) + np.random.rand() * (np.max(y) - np.min(y))
+    return x, y, sigma
+    
+#--------------------------------
+
+a, b, c = some_random_coeffs()
+x, y, sigma = some_random_data(a, b, c, 10)
+np.savetxt('adatsor.txt', np.transpose([x, y, sigma]))
+
+#------------------------------------------
+  
+plt.plot(x, y, marker='o', linestyle='')
+plt.errorbar(x,y,sigma,linestyle='')
+plt.show()
+
+#------------------
+
+# az illesztést elvégző program helye
+
+n = x.shape[0]
+terv = np.empty((n,3))  #megnézem a x hosszát és akkora üres mtrx-et hozok létre
+
+k = y.shape[0]
+b = np.empty((k))    #megnézem y ont és akkora üres vektort hozok létre
+ 
+a = np.empty((k))  #létrehozom az a vektort ami tartalmazni fogja a minimalizáló paramétereket
+ 
+# b vektor
+
+for i in range (k):
+    b[i] = y[i]/sigma[i]
+
+# Tervmátrix
+
+for i in range(3):
+    for j in range(n):
+        terv[j,i] = x[j]**i/sigma[j]
+        
+#plothoz
+plothoz = np.empty((3,n))
+
+for k in range(3):
+    plothoz[:i] = x**i
+        
+
+
+
+#a begoldandó egyenlet --> terv.T* terv * a = terv.T * b
+
+a = np.linalg.solve(np.dot(terv.transpose(),terv),np.dot(terv.transpose(),b))
+
+print(a)
