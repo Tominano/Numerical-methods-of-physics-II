@@ -70,3 +70,15 @@ for k in range(3):
 a = np.linalg.solve(np.dot(terv.transpose(),terv),np.dot(terv.transpose(),b))
 
 print(a)
+
+#-----------------------
+
+# khi^2
+
+most =(np.dot(plothoz,a))
+
+khi2 = ((np.dot(most,x) - y)**2)/(sigma)**2
+
+print(khi2)
+
+# a redukált chi^2 értéke a legjobban illeszkedő modell esetére
