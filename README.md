@@ -1,0 +1,9 @@
+# java-course
+
+### Commands for github
+
+```
+git add .
+git commit -m "this is the comment"
+git push
+```
