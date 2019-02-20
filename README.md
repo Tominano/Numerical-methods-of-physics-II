@@ -1,4 +1,4 @@
-# java-course
+# fiznum2
 
 ### Commands for github
 
