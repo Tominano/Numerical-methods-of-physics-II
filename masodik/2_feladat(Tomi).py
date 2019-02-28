@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # # II. HÁZI FELADAT
@@ -73,76 +73,131 @@
 # ### Első
 # * Negyedrendű potenciál
 # $$ V(x) = \frac{1}{4}kx^4 $$
-# Amiből az $erő$ $$F_{(x)} = kx^3 $$
+# Amiből az $erő$ $$F_{(x)} = - kx^3 $$
 # 
 # ### Második
 # * Lennard-Jones potenciál
 # $$ V(x) = V_0 \left[ \left( \frac{x_0}{x} \right)^{12} - 2 \left( \frac{x_0}{x} \right)^{6} \right] $$
 # Amiből az $erő$ 
-# $$ F(x) = 12V_0 \left[ \left( \frac{x_0^{6}}{x^{3}} \right) - \left ( \frac{x_0^{12}}{x^{9}} \right) \right] $$
+# $$ F(x) = 12V_0 \left[ \left( \frac{x_0^{5}}{x^{3}} \right) - \left ( \frac{x_0^{11}}{x^{9}} \right) \right] $$
 
 # In[1]:
 
 
 get_ipython().run_line_magic('pylab', 'inline')
 import matplotlib.pyplot as plt
-from sympy import *
-from scipy import *
+import numpy as np
+from scipy.integrate import RK45
 
 
-# In[ ]:
+# In[2]:
 
 
-def negyed(x):
+def negyedV(x):
+        
+    yV= (1/4)* x**4;
+    figsize(10,10)
+    xlabel('Távolság', fontsize = '15')
+    ylabel('Potenciál', fontsize = '15')
+    title('Esgyszerpű plot')
+    plt.plot(x,yV, linestyle='-', label='Negyedrendű potenciál')
+    legend(loc='upper left')
     
-    y=x**3;
+negyedV(linspace(-100,100,100))
+
+
+# In[3]:
+
+
+def negyedF(x):
+    
+    yF= - x**3;
     figsize(10,10)
     xlabel('Távolság', fontsize = '15')
     ylabel('Erő', fontsize = '15')
     title('Esgyszerpű plot')
-    plt.plot(x,y, marker='o', linestyle='', label='Negyedrendű potenciál erő függvénye')
+    plt.plot(x,yF, linestyle='-', label='Negyedrendű potenciál erő függvénye')
     legend(loc='upper left')
     
-negyed(linspace(-100,100))
+negyedF(linspace(-100,100,100))
 
 
-# In[ ]:
+# In[4]:
 
 
-def lenjo(x):
+def lenjoV(x,v0,x0):
 
-    z=12*(((1**6/x**3)-(1**12/x**9)));
+    z=v0*(((x0/x)**12)-(x0/x)**6);
+    figsize(10,10)
+    xlabel('Távolság', fontsize = '15')
+    ylabel('Potenciál', fontsize = '15')
+    title('Egyszerűplot')
+    plt.plot(x,z, marker='', linestyle='-', label='Lennard-Jones potenciál')
+    legend(loc='upper left')
+    ylim(-10,15)
+lenjoV(linspace(1.02,2.5,100),3,1.2)
+
+
+# In[5]:
+
+
+def lenjoF(x,v0,x0):
+
+    z=12*v0*(((x0**5/x**3)-(x0**11/x**9)));
     figsize(10,10)
     xlabel('Távolság', fontsize = '15')
     ylabel('Erő', fontsize = '15')
     title('Egyszerűplot')
     plt.plot(x,z, marker='', linestyle='-', label='Lennard-Jones potenciál erő függvénye')
     legend(loc='upper left')
-
-lenjo(linspace(-100,100,100))
+    ylim(-30,25)
+lenjoF(linspace(1,2.5,100),3,1.2)
 
 
 # # 2. feladat
 # 
 # Írjunk olyan függvényeket, melyek kiszámítják a harmonikus potenciált, az ehhez tartozó erőt, illetve az 1. feladatban felírt anharmonikus potenciálokat és erőket. Ábrázoljuk a potenciálokat és az erőket grafikonon!
 
+# Rungekuttával
+# v = x pont
+# F/m = v pont
+# vektorként tárolod
+# Kell... Adott helyen aott időben meg kell kapni a változók numerikus értékét
+
+# In[2]:
+
+
+get_ipython().run_line_magic('pinfo', 'RK45')
+
+
 # ## Harmónikus rezgőmozgás problémája
 # 
 # Természetesen az $$F = -Dr$$ alapesetből indulunk ki, ahol $F$ az erő, $D$ az ugynevezett direkciós állandó ami egy rugóval jellenezhető esetben a rugót jellemző állandó, $r$ egy vektor, ami pedig a kitérés. Mechanika tanulmányainkból tudjuk, hogy a mozgásegyenlete ennek a problémának, $$m \ddot r = -Dr$$
 # Ez egyenlet felírása után be kell vezetnem a $${\omega}^2 = \frac {D}{m}$$ mennyiséget, ahol $\omega$ a körfrekvencia nevet viseli. A kör+ frekvenciával a következő alakra tudom hozni az egyenletemet, $$\ddot r + {\omega}^2 r = 0$$
 # Ez egy másodrendű, állandó együtthatójú, homogén közönséges differenciálegyenlet, melynek tudjuk, hogy két megoldása van.Ezen differenciálegyenlet megoldásával kapom meg a partikuláris, majd az álltalános megoldást, majd kezdeti feltételeket megadva eljutunk a keresett potenciálhoz amiből egy gradiensképzéssel megkapjuk az erőt, mivel a tér amiben dolgoztunk potenciálos.Esetünkben egy egydimenziós mozgést fogok modellezni amit a $$\ddot x + {\omega}^2 x = 0$$ egyenlet jellemez.
+# Amit a megoldáshoz egy elsőrendű diffegyenletre vezetünk vissza.
+# $$v = \dot x$$
+# $$ \frac{F}{m} = \dot v$$
 
-# In[16]:
+# In[6]:
 
 
-x, omega, t = symbols('x omega t')
+def harm_oszc(t,y):
+    dx = np.diff(y[1])
+    dv = np.diff(dx)
+    return[dv,dx]
+
+rk = RK45(harm_oszc,0,[1,1],1000)
+#rk.step()
+#rk.t
+#rk.y
 
 
 # ## 4. feladat
 # 
 # Interpoláljuk a 3. feladatból kapott megoldásokat időben egyenletes lépésközzel, lineárisan és köbös spline-ok segítségével!
 
-# In[15]:
+# In[ ]:
 
 
 # megoldás helye
@@ -163,9 +218,3 @@ x, omega, t = symbols('x omega t')
 # Programozzunk be kaotikus oszcillátort!$^1$ Egy szinuszosan gerjesztett oszcillátor esetében a kaotikus viselkedés feltétele, hogy a visszatérítő erő ne lineáris függvénye legyen a kitérésnek. Ábrázoljuk a kitérés és a sebesség időfüggését, valamint a teljesítményspektrumot! Futassuk az integrálást legalább 1 millió lépésig, és ábrázoljuk a rendszer Poincaré-metszetét, azaz a sebességet a kitérés függvényében az $\omega t = n \cdot 2 \pi, n = 1, 2, 3, ... $ feltétel mellett!
 # 
 # $^1$ http://sprott.physics.wisc.edu/pubs/paper265.pdf
-
-# In[ ]:
-
-
-
-
