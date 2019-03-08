@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # # II. HÁZI FELADAT
@@ -79,84 +79,99 @@
 # * Lennard-Jones potenciál
 # $$ V(x) = V_0 \left[ \left( \frac{x_0}{x} \right)^{12} - 2 \left( \frac{x_0}{x} \right)^{6} \right] $$
 # Amiből az $erő$ 
-# $$ F(x) = 12V_0 \left[ \left( \frac{x_0^{5}}{x^{3}} \right) - \left ( \frac{x_0^{11}}{x^{9}} \right) \right] $$
+# $$ F(x) = 12V_0 \left[ \left( \frac{x_0^{12}}{x^{13}} \right ) - \left (\frac{x_0^{6}}{x^{7}} \right) \right] $$
 
-# In[1]:
+# # 2. feladat
+# 
+# Írjunk olyan függvényeket, melyek kiszámítják a harmonikus potenciált, az ehhez tartozó erőt, illetve az 1. feladatban felírt anharmonikus potenciálokat és erőket. Ábrázoljuk a potenciálokat és az erőket grafikonon!
+
+# In[75]:
 
 
 get_ipython().run_line_magic('pylab', 'inline')
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.integrate import RK45
 
 
-# In[2]:
+# In[76]:
 
 
-def negyedV(x):
-        
-    yV= (1/4)* x**4;
-    figsize(10,10)
-    xlabel('Távolság', fontsize = '15')
-    ylabel('Potenciál', fontsize = '15')
-    title('Esgyszerpű plot')
-    plt.plot(x,yV, linestyle='-', label='Negyedrendű potenciál')
-    legend(loc='upper left')
+def harm_plot():
     
-negyedV(linspace(-100,100,100))
-
-
-# In[3]:
-
-
-def negyedF(x):
-    
-    yF= - x**3;
+    xV = linspace(-4,4,100)
+    xF = linspace(-3,3,100)    
+    yV = (1/2)* xV**2;
+    yF = -xF;
     figsize(10,10)
+   
+    return xV,yV,xF,yF
+
+
+# In[77]:
+
+
+def negyed_plot():
+    []
+    xV = linspace(-4,4,100)
+    xF = linspace(-2,2,100)
+    yV= (1/4) * xV**4;
+    yF= - xF**3;
+    return xV,yV,xF,yF
+
+
+# In[78]:
+
+
+def lenjo_plot(v0,x0):
+    
+    xF = linspace(1.1,2,100)
+    xV = linspace(1.001,2.5,100)
+    zF=12*v0*(((x0**12/xF**13)-(x0**6/xF**7)));
+    zV=v0*(((x0/xV)**12)-2*(x0/xV)**6);
+    return zF,zV,xF,xV
+
+
+# In[79]:
+
+
+def erö():
+    figsize(15,10)
     xlabel('Távolság', fontsize = '15')
     ylabel('Erő', fontsize = '15')
-    title('Esgyszerpű plot')
-    plt.plot(x,yF, linestyle='-', label='Negyedrendű potenciál erő függvénye')
-    legend(loc='upper left')
-    
-negyedF(linspace(-100,100,100))
+    title('Az erők egy közös ábrán')
+    xlim(-2,2.5)
+    ylim(-7.5,7.5)
+    plt.plot(harm_plot()[2],harm_plot()[3], linestyle='-', color = "r", label='Harmónikus rezgőmozgás erőfüggvénye')
+    plt.plot(negyed_plot()[2],negyed_plot()[3], linestyle='-', color = "g",label='Negyedrendű potenciál erő függvénye')
+    plt.plot(lenjo_plot(3,1.2)[3],lenjo_plot(3,1.2)[1], marker='', linestyle='-', color = "b", label='Lennard-Jones potenciál erő függvénye')
+    legend(loc='upper left')   
 
 
-# In[4]:
+# In[80]:
 
 
-def lenjoV(x,v0,x0):
+erö()
 
-    z=v0*(((x0/x)**12)-(x0/x)**6);
-    figsize(10,10)
+
+# In[83]:
+
+
+def pot():
+    plt.plot(harm_plot()[0],harm_plot()[1], marker = 'o', linestyle='-', label='Harmónikus potenciál')
+    plt.plot(negyed_plot()[0],negyed_plot()[1], marker = 'o', linestyle='-', label='Negyedrendű potenciál')
+    plt.plot(lenjo_plot(3,1.2)[2],lenjo_plot(3,1.2)[0], marker='o', linestyle='-', label='Lennard-Jones potenciál')
+
+    figsize(15,15)
     xlabel('Távolság', fontsize = '15')
     ylabel('Potenciál', fontsize = '15')
-    title('Egyszerűplot')
-    plt.plot(x,z, marker='', linestyle='-', label='Lennard-Jones potenciál')
-    legend(loc='upper left')
-    ylim(-10,15)
-lenjoV(linspace(1.02,2.5,100),3,1.2)
+    title('Az erők egy közös ábrán')
 
 
-# In[5]:
+# In[84]:
 
 
-def lenjoF(x,v0,x0):
+pot()
 
-    z=12*v0*(((x0**5/x**3)-(x0**11/x**9)));
-    figsize(10,10)
-    xlabel('Távolság', fontsize = '15')
-    ylabel('Erő', fontsize = '15')
-    title('Egyszerűplot')
-    plt.plot(x,z, marker='', linestyle='-', label='Lennard-Jones potenciál erő függvénye')
-    legend(loc='upper left')
-    ylim(-30,25)
-lenjoF(linspace(1,2.5,100),3,1.2)
-
-
-# # 2. feladat
-# 
-# Írjunk olyan függvényeket, melyek kiszámítják a harmonikus potenciált, az ehhez tartozó erőt, illetve az 1. feladatban felírt anharmonikus potenciálokat és erőket. Ábrázoljuk a potenciálokat és az erőket grafikonon!
 
 # Rungekuttával
 # v = x pont
@@ -164,11 +179,16 @@ lenjoF(linspace(1,2.5,100),3,1.2)
 # vektorként tárolod
 # Kell... Adott helyen aott időben meg kell kapni a változók numerikus értékét
 
-# In[2]:
-
-
-get_ipython().run_line_magic('pinfo', 'RK45')
-
+# ## 3. feladat
+# 
+# Integráljuk a harmonikus és Lennard-Jones-potenciállal meghatározott oszcillátorok mozgásegyenletét egyszerű negyed rendű Runge-Kutta-módszerrel vagy a Dormand-Prince-féle 5(4)-ed rendű, adaptív lépéshossz-választásos módszerrel. Az integráláshoz használjunk szabadon elérhető programcsomagot, pl.:
+# 
+# * python: scipy.integrate.RK45
+# * octave: ode45
+# * C: GSL ODE csomag
+# * C++: Boost.Numeric.Odeint csomag
+# 
+# Ábrázoljuk az egyenlet változóinak időfejlődését, a teljes energiát és a lépéshosszt az idő függvényében!
 
 # ## Harmónikus rezgőmozgás problémája
 # 
@@ -179,28 +199,219 @@ get_ipython().run_line_magic('pinfo', 'RK45')
 # $$v = \dot x$$
 # $$ \frac{F}{m} = \dot v$$
 
-# In[6]:
+# In[85]:
 
 
-def harm_oszc(t,y):
-    dx = np.diff(y[1])
-    dv = np.diff(dx)
-    return[dv,dx]
-
-rk = RK45(harm_oszc,0,[1,1],1000)
-#rk.step()
-#rk.t
-#rk.y
+import numpy as np
+from scipy.integrate import RK45
 
 
-# ## 4. feladat
+# In[86]:
+
+
+def lenjo_plot(n):
+    y_k = np.array([1,1])
+
+    def len_jopot(t,y):
+        m,x0,v0 = 1, 1, 1;
+        dx = y[1];
+        dv = 12*x0*(((x0**12/y[0]**13)-(x0**6/y[0]**7))/m);
+        return dx, dv
+
+    rk = RK45(len_jopot,0,y_k, np.inf);
+    t = np.zeros(n)
+    y = np.empty((np.shape(t)[0],rk.y.shape[0]))
+
+    for i in range(n):
+        t[i] = rk.t
+        for j in range(rk.y.shape[0]):
+            y[i,:]=rk.y
+        rk.step()
+    
+    y1 = y[:,0]
+    y2 = y[:,1]
+
+    return t, y1, y2
+
+
+# In[87]:
+
+
+def negyed_plot(n):
+    y_k = np.array([10,10])
+
+    def negyed_pot(t,y):
+        x0, m = 0,1;
+        dx = y[1];
+        dv = -(y[0]**3)/m;
+        return dx, dv
+
+    rk = RK45(negyed_pot,0,y_k, np.inf);
+    t = np.zeros(n)
+    y = np.empty((np.shape(t)[0],rk.y.shape[0]))
+
+    for i in range(n):
+        t[i] = rk.t
+        for j in range(rk.y.shape[0]):
+            y[i:,j]=rk.y[j]
+        rk.step()
+        
+    y1 = y[:,0]
+    y2 = y[:,1]
+
+    return t, y1,y2
+
+
+# In[88]:
+
+
+def harm_plot(n):
+    y_k = np.array([1,1])
+
+    def harm_oszc(t,y):
+        x, m = 1,1;
+        dx = y[1];
+        dv = -(y[0]/m);
+        return dx, dv
+
+    rk = RK45(harm_oszc,0,y_k, 100);
+    t = np.zeros(n)
+    y = np.empty((np.shape(t)[0],rk.y.shape[0]))
+
+    for i in range(n):
+        t[i] = rk.t
+        for j in range(rk.y.shape[0]):
+            y[i,:]=rk.y
+        rk.step()
+        
+    y1 = y[:,0]
+    y2 = y[:,1]
+
+    return t, y1,y2
+
+
+# In[89]:
+
+
+def move():
+    
+    plot(lenjo_plot(55)[0],lenjo_plot(55)[1], label = "Lennard_Jones")
+    plot(negyed_plot(95)[0],negyed_plot(95)[1], label = "Negyedrendű")
+    plot(harm_plot(10)[0],harm_plot(10)[1], label = "Harmónikus")
+
+    
+    
+    figsize(15,15)
+    xlabel('Idő', fontsize = '15')
+    ylabel('Kitérés', fontsize = '15')
+    title('Mozgás')
+    legend(loc='upper left')
+move()    
+
+
+# In[90]:
+
+
+def velo():
+    
+    plot(lenjo_plot(55)[0],lenjo_plot(55)[2], label = "Lennard_Jones")
+    plot(negyed_plot(95)[0],negyed_plot(95)[2], label = "Negyedrendű")
+    plot(harm_plot(10)[0],harm_plot(10)[2], label = "Harmónikus")
+
+    
+    
+    figsize(15,15)
+    xlabel('Idő', fontsize = '15')
+    ylabel('Sebesség', fontsize = '15')
+    title('Mozgás')
+    legend(loc='upper left')
+velo()
+
+
+# # 4. feladat
 # 
 # Interpoláljuk a 3. feladatból kapott megoldásokat időben egyenletes lépésközzel, lineárisan és köbös spline-ok segítségével!
 
-# In[ ]:
+# In[91]:
 
 
-# megoldás helye
+
+from scipy.interpolate import interp1d
+
+
+# In[92]:
+
+
+def lenjo_int():
+    figsize(15,15)
+    f1 = interp1d(lenjo_plot(55)[0],lenjo_plot(55)[1] ,kind = 'linear')
+    xnew = np.linspace(0,max(lenjo_plot(55)[0]),10000)
+    plot(xnew,f1(xnew), label = "Lineáris")
+    legend(loc='upper left')
+    #Köbös megoldás
+    f2 = interp1d(lenjo_plot(55)[0],lenjo_plot(55)[1] ,kind = 'cubic')
+    xnew = np.linspace(0,max(lenjo_plot(55)[0]),10000)
+    title("Lennard-Jones")
+    plot(xnew,f2(xnew), label = "Köbös")
+    legend(loc='upper left')
+
+    return
+
+
+# In[93]:
+
+
+lenjo_int()
+
+
+# In[94]:
+
+
+def negyed_int():
+    figsize(15,15)
+    #Linéáris megoldás
+    f1 = interp1d(negyed_plot(95)[0],negyed_plot(95)[1],kind = 'linear')
+    xnew = np.linspace(0,max(negyed_plot(95)[0]),10000)
+    plot(xnew,f1(xnew), label = "Lineáris")
+    legend(loc='upper left')
+    #köbös megoldás
+    f2 = interp1d(negyed_plot(95)[0],negyed_plot(95)[1],kind = 'cubic')
+    xnew = np.linspace(0,max(negyed_plot(95)[0]),10000)
+    title("Lennard-Jones")
+    plot(xnew,f2(xnew), label = "Köbös")
+    legend(loc='upper left')
+    return
+
+
+# In[95]:
+
+
+negyed_int()
+
+
+# In[96]:
+
+
+def harm_int():        
+#interpoláció 
+    figsize(15,15)
+#Linéáris megoldás
+    f1 = interp1d(harm_plot(10)[0],harm_plot(10)[1] ,kind = 'linear')
+    xnew = np.linspace(0,max(harm_plot(10)[0]),10000)
+    plot(xnew,f1(xnew), label = "Lineáris")
+    legend(loc='upper left')
+#Köbös megoldás
+    f2 = interp1d(harm_plot(10)[0],harm_plot(10)[1] ,kind = 'cubic')
+    xnew = np.linspace(0,max(harm_plot(10)[0]),10000)
+    title("Lennard-Jones")
+    plot(xnew,f2(xnew), label = "Köbös")
+    legend(loc='upper left')
+
+
+# In[97]:
+
+
+harm_int()
 
 
 # ## 5. feladat
@@ -218,3 +429,9 @@ rk = RK45(harm_oszc,0,[1,1],1000)
 # Programozzunk be kaotikus oszcillátort!$^1$ Egy szinuszosan gerjesztett oszcillátor esetében a kaotikus viselkedés feltétele, hogy a visszatérítő erő ne lineáris függvénye legyen a kitérésnek. Ábrázoljuk a kitérés és a sebesség időfüggését, valamint a teljesítményspektrumot! Futassuk az integrálást legalább 1 millió lépésig, és ábrázoljuk a rendszer Poincaré-metszetét, azaz a sebességet a kitérés függvényében az $\omega t = n \cdot 2 \pi, n = 1, 2, 3, ... $ feltétel mellett!
 # 
 # $^1$ http://sprott.physics.wisc.edu/pubs/paper265.pdf
+
+# In[ ]:
+
+
+
+
