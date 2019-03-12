@@ -1,7 +1,7 @@
 Infok:
 - Ez a magyar nyelvű változat, még le kell majd fordítani. 
 - Bemásoltam a törzsanyagot, ebből kéne kiidulni a megoldás implementációkkal és közben átírni kicsit, plusz változtatni/kiegészíteni ahol jónak látjuk
-- Vscodban szerintem simán tudjuk szerkeszteni, tedd fel ezt [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath) a plugint és jobb felül van egy Open preview to the Side gomb
+- Vscodban szerintem simán tudjuk szerkeszteni, tedd fel ezt [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath) a plugint és jobb felül van egy Open preview to the Side gomb, de áttérhetünk latexba is, ha úgy kényelmesebb
 
 ToDo:
 - [ ] Általános megoldás másodfokú illesztésére (5. feladat) (Kapolcs)
